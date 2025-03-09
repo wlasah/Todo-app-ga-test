@@ -1,160 +1,206 @@
 :root {
-  --bg-color: #f8f9fa;
+  --primary-color: #3498db;
+  --primary-dark: #2980b9;
+  --secondary-color: #2ecc71;
+  --bg-color: #ecf0f1;
   --card-bg: white;
-  --text-color: #333;
-  --border-color: #e0e0e0;
-  --button-bg: #4a90e2;
-  --button-text: white;
-  --hover-bg: #f1f1f1;
-  --completed-color: #808080;
-  --accent-color: #4a90e2;
+  --text-color: #2c3e50;
+  --text-light: #7f8c8d;
+  --border-color: #dfe6e9;
+  --completed-color: #95a5a6;
+  --delete-color: #e74c3c;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .dark-mode {
-  --bg-color: #1a1a1a;
-  --card-bg: #2d2d2d;
-  --text-color: #e0e0e0;
-  --border-color: #444;
-  --button-bg: #5a6268;
-  --button-text: #e0e0e0;
-  --hover-bg: #3a3a3a;
-  --completed-color: #707070;
-  --accent-color: #61afef;
+  --primary-color: #3498db;
+  --primary-dark: #2980b9;
+  --secondary-color: #2ecc71;
+  --bg-color: #2c3e50;
+  --card-bg: #34495e;
+  --text-color: #ecf0f1;
+  --text-light: #bdc3c7;
+  --border-color: #415a77;
+  --completed-color: #95a5a6;
+  --delete-color: #e74c3c;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Roboto', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
   margin: 0;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .app-container {
-  width: 500px;
-  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 800px;
+  margin: 50px auto;
   background: var(--card-bg);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s;
 }
 
 h1 {
-  margin-top: 0;
-  color: var(--accent-color);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 20px;
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 1px;
 }
 
 .todo-container {
-  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 500px;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.header h2 {
-  margin: 0;
+/* Sidebar */
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  border-right: 1px solid var(--border-color);
 }
 
 .dark-mode-toggle {
-  background: none;
+  width: 100%;
+  padding: 10px;
   border: none;
-  font-size: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  margin-bottom: 20px;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 50%;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
 }
 
 .dark-mode-toggle:hover {
-  transform: rotate(15deg);
+  background-color: var(--primary-dark);
 }
 
-.add-task {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-input[type="text"] {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-button {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  border-radius: 4px;
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.add-btn {
-  margin-left: 10px;
+.dark-mode-toggle span {
+  font-size: 14px;
 }
 
 .filters {
   display: flex;
-  margin-bottom: 20px;
+  flex-direction: column;
   gap: 10px;
 }
 
 .filters button {
-  flex: 1;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
+  text-align: left;
+  padding: 12px 15px;
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   color: var(--text-color);
+  transition: all 0.2s;
+}
+
+.filters button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .filters button.active {
-  background-color: var(--accent-color);
+  background-color: var(--primary-color);
   color: white;
+}
+
+.stats {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+/* Main content */
+.main-content {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.add-task {
+  display: flex;
+  margin-bottom: 25px;
+  gap: 10px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 15px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.add-btn {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
 }
 
 .task-list {
   list-style-type: none;
-  padding: 0;
-  margin: 0;
 }
 
 .task-list li {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s ease;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
 }
 
 .task-list li:hover {
-  background-color: var(--hover-bg);
-}
-
-.task-list li:last-child {
-  border-bottom: none;
+  border-color: var(--primary-color);
 }
 
 .task-item {
@@ -166,18 +212,18 @@ button:hover {
 .task-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 input[type="checkbox"] {
   width: 18px;
   height: 18px;
+  accent-color: var(--secondary-color);
   cursor: pointer;
-  accent-color: var(--accent-color);
 }
 
 .task-text {
-  transition: color 0.3s ease;
+  font-size: 16px;
 }
 
 .completed .task-text {
@@ -191,61 +237,83 @@ input[type="checkbox"] {
 }
 
 .task-actions button {
-  padding: 6px 10px;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-color);
-  font-size: 14px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  font-size: 16px;
+  color: var(--text-light);
+  border-radius: 3px;
+  padding: 5px 8px;
+  transition: all 0.2s;
 }
 
-.task-actions button:hover {
-  background-color: var(--hover-bg);
+.edit-btn:hover {
+  color: var(--primary-color);
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.delete-btn:hover {
+  color: var(--delete-color);
+  background-color: rgba(231, 76, 60, 0.1);
 }
 
 .edit-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  width: 100%;
+}
+
+.edit-container input {
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .edit-buttons {
   display: flex;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.edit-buttons button {
+  padding: 8px 15px;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.edit-buttons button:last-child {
+  background-color: var(--text-light);
 }
 
 .empty-message {
   text-align: center;
-  color: var(--completed-color);
-  margin: 30px 0;
+  padding: 50px 0;
+  color: var(--text-light);
 }
 
-.stats {
-  margin-top: 20px;
-  color: var(--completed-color);
-  font-size: 14px;
-  text-align: right;
-}
-
-@media (max-width: 600px) {
-  .add-task {
-    flex-direction: column;
+@media (max-width: 700px) {
+  .todo-container {
+    grid-template-columns: 1fr;
   }
   
-  .add-btn {
-    margin-left: 0;
-    margin-top: 10px;
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
   }
   
-  .task-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
   }
   
-  .task-actions {
-    align-self: flex-end;
+  .filters button {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .stats {
+    text-align: center;
+    margin-top: 15px;
   }
 }

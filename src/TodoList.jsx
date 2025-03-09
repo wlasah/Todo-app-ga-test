@@ -72,100 +72,113 @@ export default function TodoList() {
 
   return (
     <div className="todo-container">
-      <div className="header">
+      {/* Sidebar */}
+      <div className="sidebar">
         <button 
           className="dark-mode-toggle" 
           onClick={toggleDarkMode}
-          aria-label="Toggle dark mode"
         >
-          {darkMode ? "☀️" : "🌙"}
+          {darkMode ? "☀️" : "🌙"} <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
         </button>
-        <h2>To-Do List</h2>
+        
+        <div className="filters">
+          <button 
+            className={filter === "all" ? "active" : ""} 
+            onClick={() => setFilter("all")}
+          >
+            All Tasks
+          </button>
+          <button 
+            className={filter === "active" ? "active" : ""} 
+            onClick={() => setFilter("active")}
+          >
+            Active Tasks
+          </button>
+          <button 
+            className={filter === "completed" ? "active" : ""} 
+            onClick={() => setFilter("completed")}
+          >
+            Completed Tasks
+          </button>
+        </div>
+        
+        <div className="stats">
+          <p>{tasks.filter(t => !t.completed).length} tasks remaining</p>
+          <p>{tasks.length} total tasks</p>
+        </div>
       </div>
       
-      <div className="add-task">
-        <input
-          type="text"
-          placeholder="Add a new task..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && addTask()}
-        />
-        <button className="add-btn" onClick={addTask}>Add Task</button>
-      </div>
-      
-      <div className="filters">
-        <button 
-          className={filter === "all" ? "active" : ""} 
-          onClick={() => setFilter("all")}
-        >
-          All
-        </button>
-        <button 
-          className={filter === "active" ? "active" : ""} 
-          onClick={() => setFilter("active")}
-        >
-          Active
-        </button>
-        <button 
-          className={filter === "completed" ? "active" : ""} 
-          onClick={() => setFilter("completed")}
-        >
-          Completed
-        </button>
-      </div>
-      
-      {filteredTasks.length === 0 ? (
-        <p className="empty-message">No tasks found</p>
-      ) : (
-        <ul className="task-list">
-          {filteredTasks.map((t, index) => (
-            <li key={index} className={t.completed ? "completed" : ""}>
-              {editIndex === index ? (
-                <div className="edit-container">
-                  <input
-                    type="text"
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && saveEdit()}
-                    autoFocus
-                  />
-                  <div className="edit-buttons">
-                    <button onClick={saveEdit}>Save</button>
-                    <button onClick={cancelEdit}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <div className="task-item">
-                  <div className="task-content">
+      {/* Main Content */}
+      <div className="main-content">
+        <div className="header">
+          <h2>My Tasks</h2>
+        </div>
+        
+        <div className="add-task">
+          <input
+            type="text"
+            placeholder="Add a new task..."
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && addTask()}
+          />
+          <button className="add-btn" onClick={addTask}>Add Task</button>
+        </div>
+        
+        {filteredTasks.length === 0 ? (
+          <p className="empty-message">
+            {filter === "all" 
+              ? "No tasks yet. Add a task to get started!" 
+              : filter === "active" 
+                ? "No active tasks" 
+                : "No completed tasks"}
+          </p>
+        ) : (
+          <ul className="task-list">
+            {filteredTasks.map((t, index) => (
+              <li key={index} className={t.completed ? "completed" : ""}>
+                {editIndex === index ? (
+                  <div className="edit-container">
                     <input
-                      type="checkbox"
-                      checked={t.completed}
-                      onChange={() => toggleComplete(index)}
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && saveEdit()}
+                      autoFocus
                     />
-                    <span className="task-text">{t.text}</span>
+                    <div className="edit-buttons">
+                      <button onClick={saveEdit}>Save</button>
+                      <button onClick={cancelEdit}>Cancel</button>
+                    </div>
                   </div>
-                  <div className="task-actions">
-                    <button 
-                      className="edit-btn" 
-                      onClick={() => startEdit(index)}
-                      disabled={t.completed}
-                    >
-                      ✏️
-                    </button>
-                    <button className="delete-btn" onClick={() => removeTask(index)}>
-                      🗑️
-                    </button>
+                ) : (
+                  <div className="task-item">
+                    <div className="task-content">
+                      <input
+                        type="checkbox"
+                        checked={t.completed}
+                        onChange={() => toggleComplete(index)}
+                      />
+                      <span className="task-text">{t.text}</span>
+                    </div>
+                    <div className="task-actions">
+                      <button 
+                        className="edit-btn" 
+                        onClick={() => startEdit(index)}
+                        disabled={t.completed}
+                      >
+                        ✏️
+                      </button>
+                      <button className="delete-btn" onClick={() => removeTask(index)}>
+                        🗑️
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      
-      <div className="stats">
-        <p>{tasks.filter(t => !t.completed).length} tasks remaining</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
