@@ -8,13 +8,27 @@ export default function TodoList() {
   const [editText, setEditText] = useState("");
   const [filter, setFilter] = useState("all"); // all, active, completed
   const [darkMode, setDarkMode] = useState(false);
+  const [animatingIndex, setAnimatingIndex] = useState(null);
 
-  // Load dark mode preference from localStorage
+  // Load dark mode preference and saved tasks from localStorage
   useEffect(() => {
     const savedDarkMode = localStorage.getItem("darkMode") === "true";
     setDarkMode(savedDarkMode);
     document.body.className = savedDarkMode ? "dark-mode" : "";
+    
+    // Load saved tasks
+    try {
+      const savedTasks = JSON.parse(localStorage.getItem("todos") || "[]");
+      setTasks(savedTasks);
+    } catch (error) {
+      console.error("Failed to load saved tasks", error);
+    }
   }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(tasks));
+  }, [tasks]);
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -27,13 +41,17 @@ export default function TodoList() {
   // Add a new task
   const addTask = () => {
     if (task.trim() === "") return;
-    setTasks([...tasks, { text: task, completed: false }]);
+    setTasks([...tasks, { text: task, completed: false, createdAt: new Date().toISOString() }]);
     setTask("");
   };
 
-  // Remove a task
+  // Remove a task with animation
   const removeTask = (index) => {
-    setTasks(tasks.filter((_, i) => i !== index));
+    setAnimatingIndex(index);
+    setTimeout(() => {
+      setTasks(tasks.filter((_, i) => i !== index));
+      setAnimatingIndex(null);
+    }, 300); // Match this time to the CSS animation duration
   };
 
   // Toggle completed status
@@ -63,6 +81,15 @@ export default function TodoList() {
     setEditIndex(null);
   };
 
+  // Handle keypress events
+  const handleKeyPress = (e, action) => {
+    if (e.key === "Enter") {
+      action();
+    } else if (e.key === "Escape" && editIndex !== null) {
+      cancelEdit();
+    }
+  };
+
   // Get filtered tasks based on selected filter
   const filteredTasks = tasks.filter(task => {
     if (filter === "active") return !task.completed;
@@ -72,113 +99,115 @@ export default function TodoList() {
 
   return (
     <div className="todo-container">
-      {/* Sidebar */}
-      <div className="sidebar">
+      <div className="header">
+        <h2>My Tasks</h2>
         <button 
           className="dark-mode-toggle" 
           onClick={toggleDarkMode}
+          aria-label="Toggle dark mode"
         >
-          {darkMode ? "☀️" : "🌙"} <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
+          {darkMode ? "☀️" : "🌙"}
         </button>
-        
-        <div className="filters">
-          <button 
-            className={filter === "all" ? "active" : ""} 
-            onClick={() => setFilter("all")}
-          >
-            All Tasks
-          </button>
-          <button 
-            className={filter === "active" ? "active" : ""} 
-            onClick={() => setFilter("active")}
-          >
-            Active Tasks
-          </button>
-          <button 
-            className={filter === "completed" ? "active" : ""} 
-            onClick={() => setFilter("completed")}
-          >
-            Completed Tasks
-          </button>
-        </div>
-        
-        <div className="stats">
-          <p>{tasks.filter(t => !t.completed).length} tasks remaining</p>
-          <p>{tasks.length} total tasks</p>
-        </div>
       </div>
       
-      {/* Main Content */}
-      <div className="main-content">
-        <div className="header">
-          <h2>My Tasks</h2>
-        </div>
-        
-        <div className="add-task">
-          <input
-            type="text"
-            placeholder="Add a new task..."
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && addTask()}
-          />
-          <button className="add-btn" onClick={addTask}>Add Task</button>
-        </div>
-        
-        {filteredTasks.length === 0 ? (
-          <p className="empty-message">
-            {filter === "all" 
-              ? "No tasks yet. Add a task to get started!" 
-              : filter === "active" 
-                ? "No active tasks" 
-                : "No completed tasks"}
-          </p>
-        ) : (
-          <ul className="task-list">
-            {filteredTasks.map((t, index) => (
-              <li key={index} className={t.completed ? "completed" : ""}>
-                {editIndex === index ? (
-                  <div className="edit-container">
+      <div className="add-task">
+        <input
+          type="text"
+          placeholder="What needs to be done?"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          onKeyPress={(e) => handleKeyPress(e, addTask)}
+        />
+        <button className="add-btn" onClick={addTask}>Add Task</button>
+      </div>
+      
+      <div className="filters">
+        <button 
+          className={filter === "all" ? "active" : ""} 
+          onClick={() => setFilter("all")}
+        >
+          All
+        </button>
+        <button 
+          className={filter === "active" ? "active" : ""} 
+          onClick={() => setFilter("active")}
+        >
+          Active
+        </button>
+        <button 
+          className={filter === "completed" ? "active" : ""} 
+          onClick={() => setFilter("completed")}
+        >
+          Completed
+        </button>
+      </div>
+      
+      {filteredTasks.length === 0 ? (
+        <p className="empty-message">
+          {filter === "all" 
+            ? "Your task list is empty. Add a task to get started!" 
+            : filter === "active" 
+              ? "No active tasks remaining" 
+              : "No completed tasks yet"}
+        </p>
+      ) : (
+        <ul className="task-list">
+          {filteredTasks.map((t, index) => (
+            <li 
+              key={index} 
+              className={`${t.completed ? "completed" : ""} ${animatingIndex === index ? "task-exit" : ""}`}
+            >
+              {editIndex === index ? (
+                <div className="edit-container">
+                  <input
+                    type="text"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyPress={(e) => handleKeyPress(e, saveEdit)}
+                    onKeyDown={(e) => e.key === "Escape" && cancelEdit()}
+                    autoFocus
+                  />
+                  <div className="edit-buttons">
+                    <button onClick={saveEdit}>Save</button>
+                    <button onClick={cancelEdit}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="task-item">
+                  <div className="task-content">
                     <input
-                      type="text"
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && saveEdit()}
-                      autoFocus
+                      type="checkbox"
+                      checked={t.completed}
+                      onChange={() => toggleComplete(index)}
                     />
-                    <div className="edit-buttons">
-                      <button onClick={saveEdit}>Save</button>
-                      <button onClick={cancelEdit}>Cancel</button>
-                    </div>
+                    <span className="task-text" title={t.text}>{t.text}</span>
                   </div>
-                ) : (
-                  <div className="task-item">
-                    <div className="task-content">
-                      <input
-                        type="checkbox"
-                        checked={t.completed}
-                        onChange={() => toggleComplete(index)}
-                      />
-                      <span className="task-text">{t.text}</span>
-                    </div>
-                    <div className="task-actions">
-                      <button 
-                        className="edit-btn" 
-                        onClick={() => startEdit(index)}
-                        disabled={t.completed}
-                      >
-                        ✏️
-                      </button>
-                      <button className="delete-btn" onClick={() => removeTask(index)}>
-                        🗑️
-                      </button>
-                    </div>
+                  <div className="task-actions">
+                    <button 
+                      className="edit-btn" 
+                      onClick={() => startEdit(index)}
+                      disabled={t.completed}
+                      title={t.completed ? "Cannot edit completed task" : "Edit task"}
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      className="delete-btn" 
+                      onClick={() => removeTask(index)}
+                      title="Delete task"
+                    >
+                      🗑️
+                    </button>
                   </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      
+      <div className="stats">
+        <p>{tasks.filter(t => !t.completed).length} task{tasks.filter(t => !t.completed).length !== 1 ? 's' : ''} remaining</p>
       </div>
     </div>
   );
