@@ -1,15 +1,17 @@
-name: Deploy Vite React App to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Change this if your branch is different
+      - main  # Trigger deployment on push to main
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,8 +30,10 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          branch: gh-pages  # Deploy to the gh-pages branch
-          folder: dist       # The folder containing your build output
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
