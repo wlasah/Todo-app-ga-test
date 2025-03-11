@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on main branch
 
 permissions:
   contents: read
@@ -30,14 +30,17 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Debug: Check dist folder
+        run: ls -la dist
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
           path: dist
-          if-no-files-found: error  # Stops if dist is missing
+          if-no-files-found: error
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
         with:
-          artifact_name: github-pages  # Ensure it matches
+          artifact_name: github-pages
