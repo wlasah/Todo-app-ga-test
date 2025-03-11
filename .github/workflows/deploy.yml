@@ -31,10 +31,13 @@ jobs:
         run: npm run build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4  # 🔥 FIXED: Updated action
+        uses: actions/upload-artifact@v4
         with:
-          name: github-pages  # Matches the expected name for GitHub Pages
-          path: dist  # Vite builds to "dist"
+          name: github-pages
+          path: dist
+          if-no-files-found: error  # Stops if dist is missing
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
+        with:
+          artifact_name: github-pages  # Ensure it matches
