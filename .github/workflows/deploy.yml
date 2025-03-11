@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Deploy when pushing to main
+      - main
 
 permissions:
   contents: read
@@ -31,9 +31,9 @@ jobs:
         run: npm run build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3  # Updated to v3
+        uses: actions/upload-pages-artifact@v2
         with:
-          path: dist  # Change to 'build' if using CRA
+          path: dist  # Make sure this matches Vite's output directory
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
