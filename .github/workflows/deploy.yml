@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to main
+      - main  # Deploy when pushing to main
 
 permissions:
   contents: read
@@ -31,9 +31,9 @@ jobs:
         run: npm run build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3  # ✅ Updated to v3
+        uses: actions/upload-pages-artifact@v3  # Updated to v3
         with:
-          path: dist
+          path: dist  # Change to 'build' if using CRA
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
